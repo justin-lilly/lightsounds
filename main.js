@@ -14,11 +14,11 @@ fs = require('fs'),
 _ = require('lodash'),
 //PWMPins
 ledPins = {
-    0:{ pin:3, led:null, state: 0, delay: 400},
-    1:{ pin:5, led:null, state: 0, delay: 400},
-    2:{ pin:6, led:null, state: 0, delay: 400},
-    3:{ pin:9, led:null, state: 0, delay: 400},
-    4:{ pin:10, led:null, state: 0, delay: 400}
+    0:{ pin:3, led:null, state: 0, delay: 400, running: true},
+    1:{ pin:5, led:null, state: 0, delay: 400, running: true},
+    2:{ pin:6, led:null, state: 0, delay: 400, running: true},
+    3:{ pin:9, led:null, state: 0, delay: 400, running: true},
+    4:{ pin:10, led:null, state: 0, delay: 400, running: true}
 };
 
 //photoPins = {
@@ -47,49 +47,59 @@ led3Delay(ledPins[3]);
 led4Delay(ledPins[4]);
 
 function led0Delay(ledData){
-    if(ledData.state){
-        setState(ledData);
-        setTimeout(function() {led0Delay(ledData);}, ledData.delay);
-    } else {
-        setState(ledData);
-        setTimeout(function() {led0Delay(ledData);}, 200);
+    if(ledData.running){
+        if(ledData.state){
+            setState(ledData);
+            setTimeout(function() {led0Delay(ledData);}, ledData.delay);
+        } else {
+            setState(ledData);
+            setTimeout(function() {led0Delay(ledData);}, 200);
+        }
     }
 }
 
 function led1Delay(ledData){
-    if(ledData.state){
-        setState(ledData);
-        setTimeout(function() {led1Delay(ledData);}, ledData.delay);
-    } else {
-        setState(ledData);
-        setTimeout(function() {led1Delay(ledData);}, 200);
+    if(ledData.running){
+        if(ledData.state){
+            setState(ledData);
+            setTimeout(function() {led1Delay(ledData);}, ledData.delay);
+        } else {
+            setState(ledData);
+            setTimeout(function() {led1Delay(ledData);}, 200);
+        }
     }
 }
 function led2Delay(ledData){
-    if(ledData.state){
-        setState(ledData);
-        setTimeout(function() {led2Delay(ledData);}, ledData.delay);
-    } else {
-        setState(ledData);
-        setTimeout(function() {led2Delay(ledData);}, 200);
+    if(ledData.running){
+        if(ledData.state){
+            setState(ledData);
+            setTimeout(function() {led2Delay(ledData);}, ledData.delay);
+        } else {
+            setState(ledData);
+            setTimeout(function() {led2Delay(ledData);}, 200);
+        }
     }
 }
 function led3Delay(ledData){
-    if(ledData.state){
-        setState(ledData);
-        setTimeout(function() {led3Delay(ledData);}, ledData.delay);
-    } else {
-        setState(ledData);
-        setTimeout(function() {led3Delay(ledData);}, 200);
+    if(ledData.running){
+        if(ledData.state){
+            setState(ledData);
+            setTimeout(function() {led3Delay(ledData);}, ledData.delay);
+        } else {
+            setState(ledData);
+            setTimeout(function() {led3Delay(ledData);}, 200);
+        }
     }
 }
 function led4Delay(ledData){
-    if(ledData.state){
-        setState(ledData);
-        setTimeout(function() {led4Delay(ledData);}, ledData.delay);
-    } else {
-        setState(ledData);
-        setTimeout(function() {led4Delay(ledData);}, 200);
+    if(ledData.running){
+        if(ledData.state){
+            setState(ledData);
+            setTimeout(function() {led4Delay(ledData);}, ledData.delay);
+        } else {
+            setState(ledData);
+            setTimeout(function() {led4Delay(ledData);}, 200);
+        }
     }
 }
 
@@ -126,11 +136,19 @@ app.listen(3000);
 io.sockets.on('connection', function(socket){
     socket.emit('news', { hello: 'world' });
 
-    // if led message emitted
+    // if led delay message emitted
     socket.on('led', function (data) {
         console.log(data);
         ledPins[data.pin].delay = data.interval;    
     });
+    
+    // if switch message emitted
+    socket.on('switch', function (data) {
+    console.log(data);
+    ledPins[data.pin].functional
+  });
+
+    
 });
 
 //  // poll this sensor every second

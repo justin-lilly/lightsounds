@@ -88,12 +88,13 @@
             $('#pincont-'+count).append(
                 [ '<div class="col-md-6 switch>',
                   '<label class="switch btn btn-primary">',
-                  '<input type="radio" name="pin-"'+ count +'id="on "'+ count + 'value="135"> ON',
+                  '<input type="radio"  pin = "'+count+'" name="'+ count +'" id="on "'+ count + 'value="1"> ON',
                   '</label>',        
                   '<label class="switch btn btn-primary">',
-                  '<input type="radio" name="pin-"' + count + 'id="off "'+ count + 'value="180"> OFF',
+                  '<input type="radio"  pin = "'+count+'" name="' + count + ' id="off "'+ count + 'value="0"> OFF',
                   '</label>',
                   '</div>'].join(''));
+            $('.switch').button();
         };
         
         function createDial(){
@@ -152,12 +153,25 @@
 //              <input type="radio" name="servo" id="servo3" value="90"> 90
 //            </label>
         
-        $('.switch').button();
+        //      $('.servobtn').button();
+//
+//      $('.servobtn').on('change',function(){
+//          console.log("Setting Servo Pos:",$('input[name=servo]:checked').val())
+//          socket.emit('servo',{pos:$('input[name=servo]:checked').val()});
+//      });
+        
 
-        $('.servobtn').on('change',function(){
-            console.log("Setting Servo Pos:",$('input[name=servo]:checked').val())
-            socket.emit('servo',{pos:$('input[name=servo]:checked').val()});
+        $('.switch').on('change',function(){
+            $temp = $(this);
+            LEDpin = $temp.attr('pin');
+            LEDvalue = $temp.attr('value');
+            console.log("Setting Pin output:",$('input[name=switch]:checked').val())
+            socket.emit('switch',{pin:LEDpin, value:LEDvalue});
         });
+        
+//        '<label class="switch btn btn-primary">',
+//                  '<input type="radio" name="pin-"' + count + 'id="off "'+ count + 'value="0"> OFF',
+//                  '</label>'
         
         //      var socket = io.connect('http://localhost');
 //
