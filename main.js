@@ -3,47 +3,23 @@ app = require('http').createServer(handler),
 io = require('socket.io').listen(app),
 fs = require('fs'),
 _ = require('lodash'),
-play = require('play').Play(),
 //PWMPins
 ledPins = {
-    0:{ pin:3, led:null, state: 0, delay: 400, running: false},
-    1:{ pin:5, led:null, state: 0, delay: 400, running: false},
-    2:{ pin:6, led:null, state: 0, delay: 400, running: false},
-    3:{ pin:9, led:null, state: 0, delay: 400, running: false},
-    4:{ pin:10, led:null, state: 0, delay: 400, running: false}
+    0:{ pin:3, led:null, state: 1, delay: 400, running: true},
+    1:{ pin:5, led:null, state: 1, delay: 400, running: true},
+    2:{ pin:6, led:null, state: 1, delay: 400, running: true},
+    3:{ pin:9, led:null, state: 1, delay: 400, running: true},
+    4:{ pin:10, led:null, state: 1, delay: 400, running: true}
 };
-
-//
-//  // play with a callback
-//  play.sound('./wavs/sfx/intro.wav', function(){
-//
-//    // these are all "fire and forget", no callback
-//    play.sound('./wavs/sfx/alarm.wav');
-//    play.sound('./wavs/sfx/crinkle.wav');
-//    play.sound('./wavs/sfx/flush.wav');
-//    play.sound('./wavs/sfx/ding.wav');
-//
-//  });
-//
-//  //If you want to know when the player has defintely started playing
-//  play.on('play', function (valid) {
-//    console.log('I just started playing!');
-//  });
-//  play.sound('./wavs/sfx/ding.wav');
-//
-//  //If you want to know if this can't play for some reason
-//  play.on('error', function () {
-//    console.log('I can't play!');
-//  });
 
 
 
 photoPins = {
-    0:{ pin: "0", sensor: null },
-    1:{ pin: "1", sensor: null },
-    2:{ pin: "2", sensor: null },
-    3:{ pin: "3", sensor: null },
-    4:{ pin: "4",sensor: null },
+    0:{ pin: 0, sensor: null },
+    1:{ pin: 1, sensor: null },
+    2:{ pin: 2, sensor: null },
+    3:{ pin: 3, sensor: null },
+    4:{ pin: 4,sensor: null },
 };
 
 
@@ -54,9 +30,11 @@ _.forEach(ledPins, function(index){
     index.state = 1;
     index.led.dir(mraa.DIR_OUT);
     index.led.write(index.state);
+		index.led.write(0);
 });
 
-
+//var analogPin0 = new mraa.Aio(0); //setup access analog input Analog pin #0 (A0)
+//var analogValue = analogPin0.read(); //read the value of the analog pin
 
 _.forEach(photoPins, function(index){
     index.sensor = new mraa.Aio(index.pin);
@@ -67,6 +45,12 @@ led1Delay(ledPins[1]);
 led2Delay(ledPins[2]);
 led3Delay(ledPins[3]);
 led4Delay(ledPins[4]);
+
+photo0Delay(photoPins[0].sensor);
+photo1Delay(photoPins[1].sensor);
+photo2Delay(photoPins[2].sensor);
+photo3Delay(photoPins[3].sensor);
+photo4Delay(photoPins[4].sensor);
 
 function led0Delay(ledData){
     if(ledData.running){
@@ -82,6 +66,7 @@ function led0Delay(ledData){
 
 
 function led1Delay(ledData){
+	console.log("LED1: ", ledData);
     if(ledData.running){
         if(ledData.state){
             setState(ledData);
@@ -166,7 +151,7 @@ function photo3Delay(sensor){
 
 function photo4Delay(sensor){
 	var value = sensor.read();
-	io.sockets.emit('photo4',{ data:value});
+	io.sockets.emit('photo4',{ data:value});		
 	console.log("Photo"+sensor.pin+" data: ", value)
 	setTimeout(function() {photo4Delay(sensor);}, 100)
 }
@@ -196,20 +181,18 @@ app.listen(3000);
 
 io.sockets.on('connection', function(socket){
 		
+		socket.on('onOff', function(data) {
+			console.log("got the call", data);
+			ledPins[parseInt(data.pin)].running = data.status;
+			console.log(parseInt(ledPins[data.pin]));
+		});
+	
     // if led delay message emitted
     socket.on('led', function (data) {
-        console.log(data);
-        ledPins[data.pin].delay = data.interval;    
+        console.log("********SET*******",data);
+        ledPins[parseInt(data.pin)].delay = data.interval;    
     });
-    
-    // if switch message emitted
-    socket.on('switch', function (data) {
-    console.log(data);
-    ledPins[data.pin].functional
-  });
 
     
 });
 
-//var analogPin0 = new mraa.Aio(0); //setup access analog input Analog pin #0 (A0)
-//var analogValue = analogPin0.read(); //read the value of the analog pin
