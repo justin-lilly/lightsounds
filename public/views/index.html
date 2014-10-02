@@ -86,15 +86,16 @@
         
         function createSwitch(){
             $('#pincont-'+count).append(
-                [ '<div class="col-md-6 switch>',
-                  '<label class="switch btn btn-primary">',
-                  '<input type="radio"  pin = "'+count+'" name="'+ count +'" id="on "'+ count + 'value="1"> ON',
+                [ '<div class="col-md-6">',
+                  '<label class="switch-'+count+' btn btn-primary">',
+                  '<input type="radio"  pin = "'+count+'" name="'+ count +'" id="on '+ count + '"value="1"> ON',
                   '</label>',        
-                  '<label class="switch btn btn-primary">',
-                  '<input type="radio"  pin = "'+count+'" name="' + count + ' id="off "'+ count + 'value="0"> OFF',
+                  '<label class="switch-'+count+' btn btn-primary">',
+                  '<input type="radio"  pin = "'+count+'" name="' + count + '" id="off '+ count + '"value="0"> OFF',
                   '</label>',
                   '</div>'].join(''));
-            $('.switch').button();
+            $('.switch-' + count).button(function(){
+                console.log("WORKINGGGGG")});
         };
         
         function createDial(){
@@ -103,7 +104,7 @@
                     min:200,
                     max:2000,
                     stepsPerRevolution:100,
-                    value: 200,
+                    value: 1000,
                     strings:{ label: "Set Delay", resetStr: "Reset" }
                 });
                 dials.push(dial);
@@ -118,7 +119,7 @@
                 '<center><div class = "col-md-4" id = "pincont-'+count+'"><center>',
                 '<div class="row display'+count+'">',
                 '<h4>LED'+count+'</h4>',
-                '<textarea class="form-control" style="background:#222; color:#00ff00;" rows="8" id="inData">',
+                '<textarea class="form-control" style="background:#222; color:#00ff00;" rows="8" id="inData-"'+count+'>',
                 '</textarea>',
                 '</div>',
                 '</div>'
@@ -148,18 +149,6 @@
           var tmp = parseInt(LEDval, 10);
           socket.emit('led',{pin:LEDpin, interval:tmp});
         });
-        
-//                    <label class="servobtn btn btn-primary">
-//              <input type="radio" name="servo" id="servo3" value="90"> 90
-//            </label>
-        
-        //      $('.servobtn').button();
-//
-//      $('.servobtn').on('change',function(){
-//          console.log("Setting Servo Pos:",$('input[name=servo]:checked').val())
-//          socket.emit('servo',{pos:$('input[name=servo]:checked').val()});
-//      });
-        
 
         $('.switch').on('change',function(){
             $temp = $(this);
@@ -169,6 +158,31 @@
             socket.emit('switch',{pin:LEDpin, value:LEDvalue});
         });
         
+        socket.on('photo0', function (data) {
+            console.log("Incoming sensor data:",data.raw);
+            $("#inData").append(data.raw+"\r");
+            $("#inData").animate({scrollTop:$("#inData0")[0].scrollHeight - $("#inData").height()},200);
+        });
+        socket.on('photo1', function (data) {
+            console.log("Incoming sensor data:",data.raw);
+            $("#inData").append(data.raw+"\r");
+            $("#inData").animate({scrollTop:$("#inData0")[0].scrollHeight - $("#inData").height()},200);
+        });
+        socket.on('photo2', function (data) {
+            console.log("Incoming sensor data:",data.raw);
+            $("#inData").append(data.raw+"\r");
+            $("#inData").animate({scrollTop:$("#inData0")[0].scrollHeight - $("#inData").height()},200);
+        });
+        socket.on('photo3', function (data) {
+            console.log("Incoming sensor data:",data.raw);
+            $("#inData").append(data.raw+"\r");
+            $("#inData").animate({scrollTop:$("#inData0")[0].scrollHeight - $("#inData").height()},200);
+        });
+        socket.on('photo4', function (data) {
+            console.log("Incoming sensor data:",data.raw);
+            $("#inData").append(data.raw+"\r");
+            $("#inData").animate({scrollTop:$("#inData0")[0].scrollHeight - $("#inData").height()},200);
+        });
 //        '<label class="switch btn btn-primary">',
 //                  '<input type="radio" name="pin-"' + count + 'id="off "'+ count + 'value="0"> OFF',
 //                  '</label>'
@@ -185,19 +199,7 @@
 //        $("#inData").animate({scrollTop:$("#inData")[0].scrollHeight - $("#inData").height()},200);
 //
 //      });
-//
-//      $('.servobtn').button();
-//
-//      $('.servobtn').on('change',function(){
-//          console.log("Setting Servo Pos:",$('input[name=servo]:checked').val())
-//          socket.emit('servo',{pos:$('input[name=servo]:checked').val()});
-//      });
-//
-//      $('#ledSet').on('click',function(){
-//        var tmp = parseInt($('#ledDelay').val(),10);
-//        console.log("Setting LED Delay:",tmp)
-//        socket.emit('led',{delay:tmp});
-//      });
+
     </script>
 
     </body>

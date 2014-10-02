@@ -1,12 +1,3 @@
-/*
-A simple node.js application intended to blink the onboard LED on the Intel based development boards such as the Intel(R) Galileo and Edison with Arduino breakout board.
-
-MRAA - Low Level Skeleton Library for Communication on GNU/Linux platforms
-Library in C/C++ to interface with Galileo & other Intel platforms, in a structured and sane API with port nanmes/numbering that match boards & with bindings to javascript & python.
-
-The intent is to make it easier for developers and sensor manufacturers to map their sensors & actuators on top of supported hardware and to allow control of low level communication protocol by high level languages & constructs.
-*/
-
 var mraa = require('mraa'), //require mraa
 app = require('http').createServer(handler),
 io = require('socket.io').listen(app),
@@ -14,21 +5,20 @@ fs = require('fs'),
 _ = require('lodash'),
 //PWMPins
 ledPins = {
-    0:{ pin:3, led:null, state: 0, delay: 400, running: true},
-    1:{ pin:5, led:null, state: 0, delay: 400, running: true},
-    2:{ pin:6, led:null, state: 0, delay: 400, running: true},
-    3:{ pin:9, led:null, state: 0, delay: 400, running: true},
-    4:{ pin:10, led:null, state: 0, delay: 400, running: true}
+    0:{ pin:3, led:null, state: 0, delay: 400, running: false},
+    1:{ pin:5, led:null, state: 0, delay: 400, running: false},
+    2:{ pin:6, led:null, state: 0, delay: 400, running: false},
+    3:{ pin:9, led:null, state: 0, delay: 400, running: false},
+    4:{ pin:10, led:null, state: 0, delay: 400, running: false}
 };
 
-//photoPins = {
-//    0:{ "pin":3, "sensor":null },
-//    1:{ "pin":5, "sensor":null },
-//    2:{ "pin":6, "sensor":null }, f
-//    3:{ "pin":9, "sensor":null },
-//    4:{ "pin":10, "sensor":null },
-//    5:{ "pin":11, "sensor":null }
-//};
+photoPins = {
+    0:{ pin: 3, sensor: null },
+    1:{ pin: 5, sensor: null },
+    2:{ pin: 6, sensor: null },
+    3:{ pin: 9, sensor: null },
+    4:{ pin: 10,sensor: null },
+};
 
 
 console.log('MRAA Version: ' + mraa.getVersion()); //write the mraa version to the Intel XDK console
@@ -38,6 +28,13 @@ _.forEach(ledPins, function(index){
     index.state = 1;
     index.led.dir(mraa.DIR_OUT);
     index.led.write(index.state);
+});
+
+//var analogPin0 = new mraa.Aio(0); //setup access analog input Analog pin #0 (A0)
+//var analogValue = analogPin0.read(); //read the value of the analog pin
+
+_.forEach(photoPins, function(index){
+    index.sensor = new mraa.Gpio(index.pin);
 });
 
 led0Delay(ledPins[0]);
@@ -134,8 +131,24 @@ function handler (req, res) {
 app.listen(3000);
 
 io.sockets.on('connection', function(socket){
-    socket.emit('news', { hello: 'world' });
-
+    
+    // handles sensor info
+    photoPins[0].on("data",function(){
+      socket.emit('phot00', { raw: this.raw });
+    });
+    photoPins[1].on("data",function(){
+      socket.emit('phot01', { raw: this.raw });
+    });
+    photoPins[2].on("data",function(){
+      socket.emit('phot02', { raw: this.raw });
+    });
+    photoPins[3].on("data",function(){
+      socket.emit('phot03', { raw: this.raw });
+    }); 
+    photoPins[4].on("data",function(){
+      socket.emit('phot04', { raw: this.raw });
+    });
+    
     // if led delay message emitted
     socket.on('led', function (data) {
         console.log(data);
