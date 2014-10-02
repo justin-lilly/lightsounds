@@ -8,18 +8,18 @@ The intent is to make it easier for developers and sensor manufacturers to map t
 */
 
 var mraa = require('mraa'), //require mraa
-//app = require('http').createServer(handler),
-//io = require('socket.io').listen(app),
-//fs = require('fs'),
+app = require('http').createServer(handler),
+io = require('socket.io').listen(app),
+fs = require('fs'),
 _ = require('lodash'),
+//PWMPins
 ledPins = {
-    0:{ "pin":3, "led":null, "state": false, "delay": 100},
-    1:{ "pin":5, "led":null, "state": false, "delay": 100},
-    2:{ "pin":6, "led":null, "state": false, "delay": 100},
-    3:{ "pin":9, "led":null, "state": false, "delay": 100},
-    4:{ "pin":10, "led":null, "state": false, "delay": 100}
-//    5:{ "pin":11, "led":null, "state" = false }
-}; //PWM Pins
+    0:{ pin:3, led:null, state: 0, delay: 400},
+    1:{ pin:5, led:null, state: 0, delay: 400},
+    2:{ pin:6, led:null, state: 0, delay: 400},
+    3:{ pin:9, led:null, state: 0, delay: 400},
+    4:{ pin:10, led:null, state: 0, delay: 400}
+};
 
 //photoPins = {
 //    0:{ "pin":3, "sensor":null },
@@ -30,67 +30,102 @@ ledPins = {
 //    5:{ "pin":11, "sensor":null }
 //};
 
-//var analogPin0 = new mraa.Aio(0);
 
 console.log('MRAA Version: ' + mraa.getVersion()); //write the mraa version to the Intel XDK console
 
 _.forEach(ledPins, function(index){
     index.led = new mraa.Gpio(index.pin);
-    index.state = true;
+    index.state = 1;
     index.led.dir(mraa.DIR_OUT);
-    index.led.write(1);
+    index.led.write(index.state);
 });
 
-//_.forEach(photoPins, function(index){ 
-//    index.sensor = new mraa.Aio(index.pin);
-//});
+led0Delay(ledPins[0]);
+led1Delay(ledPins[1]);
+led2Delay(ledPins[2]);
+led3Delay(ledPins[3]);
+led4Delay(ledPins[4]);
 
-//var led0 = new mraa.Gpio(13); //LED hooked up to digital pin 13 (or built in pin on Galileo Gen1 & Gen2)
-//led0.dir(mraa.DIR_OUT); //set the gpio direction to output
-//var led0State = true; //Boolean to hold the state of Led
+function led0Delay(ledData){
+    if(ledData.state){
+        setState(ledData);
+        setTimeout(function() {led0Delay(ledData);}, ledData.delay);
+    } else {
+        setState(ledData);
+        setTimeout(function() {led0Delay(ledData);}, 200);
+    }
+}
 
-//periodicActivity(); //call the periodicActivity function
-//
-//function periodicActivity()
-//{
-//      led0.write(led0State?1:0); //if led0State is true then write a '1' (high) otherwise write a '0' (low)
-//      led0State = !led0State; //invert the led0State
-//      setTimeout(periodicActivity,1000); //call the indicated function after 1 second (1000 milliseconds)
-//}
+function led1Delay(ledData){
+    if(ledData.state){
+        setState(ledData);
+        setTimeout(function() {led1Delay(ledData);}, ledData.delay);
+    } else {
+        setState(ledData);
+        setTimeout(function() {led1Delay(ledData);}, 200);
+    }
+}
+function led2Delay(ledData){
+    if(ledData.state){
+        setState(ledData);
+        setTimeout(function() {led2Delay(ledData);}, ledData.delay);
+    } else {
+        setState(ledData);
+        setTimeout(function() {led2Delay(ledData);}, 200);
+    }
+}
+function led3Delay(ledData){
+    if(ledData.state){
+        setState(ledData);
+        setTimeout(function() {led3Delay(ledData);}, ledData.delay);
+    } else {
+        setState(ledData);
+        setTimeout(function() {led3Delay(ledData);}, 200);
+    }
+}
+function led4Delay(ledData){
+    if(ledData.state){
+        setState(ledData);
+        setTimeout(function() {led4Delay(ledData);}, ledData.delay);
+    } else {
+        setState(ledData);
+        setTimeout(function() {led4Delay(ledData);}, 200);
+    }
+}
 
-//led0Delay();
-//led1Delay();
-//led2Delay();
-//led3Delay();
-//led4Delay();
-//led5Delay();
 
+
+function setState(ledData){
+    if(ledData.state == 0){
+        ledData.state = 1;
+    } else {
+        ledData.state = 0;
+    }
+        ledData.led.write(ledData.state);
+}
 
 //=======================================================================================================
 // SOCKET.IO SHIT
-// initialize everything, web server, socket.io, filesystem, johnny-five
-//var app = require('http').createServer(handler),
-//  io = require('socket.io').listen(app),
-//  fs = require('fs'),
-//  five = require("johnny-five"),
-//  board,servo,led,sensor;
 
-//board = new five.Board({port:"/dev/ttyACM0"});
+// handle web server
+function handler (req, res) {
+  fs.readFile(__dirname + '/public/views/index.html',
+  function (err, data) {
+    if (err) {
+      res.writeHead(500);
+      return res.end('Error loading index.html');
+    }
 
-// on board ready
-//board.on("ready", function() {
-//
-//  // init a led on pin 13, strobe every 1000ms
-//  led = new five.Led(13).strobe(1000);
-//
-//  // setup a stanard servo, center at start
-//  servo = new five.Servo({
-//    pin:6,
-//    range: [0,180],
-//    type: "standard",
-//    center:true
-//  });
-//
+    console.log("Server started");
+    res.writeHead(200);
+    res.end(data);
+  });
+}
+
+// make web server listen on port 80
+app.listen(3000);
+
+
 //  // poll this sensor every second
 //  sensor = new five.Sensor({
 //    pin: "A0",
@@ -99,23 +134,8 @@ _.forEach(ledPins, function(index){
 //
 //});
 //
-//// make web server listen on port 80
-//app.listen(80);
 //
 //
-//// handle web server
-//function handler (req, res) {
-//  fs.readFile(__dirname + '/index.html',
-//  function (err, data) {
-//    if (err) {
-//      res.writeHead(500);
-//      return res.end('Error loading index.html');
-//    }
-//
-//    res.writeHead(200);
-//    res.end(data);
-//  });
-//}
 //
 //
 //// on a socket connection
@@ -130,11 +150,6 @@ _.forEach(ledPins, function(index){
 //    });
 //  }
 //
-//  // if servo message received
-//  socket.on('servo', function (data) {
-//    console.log(data);
-//    if(board.isReady){ servo.to(data.pos);  }
-//  });
 //  // if led message received
 //  socket.on('led', function (data) {
 //    console.log(data);
