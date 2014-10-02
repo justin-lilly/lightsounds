@@ -119,7 +119,7 @@
                 '<center><div class = "col-md-4" id = "pincont-'+count+'"><center>',
                 '<div class="row display'+count+'">',
                 '<h4>LED'+count+'</h4>',
-                '<textarea class="form-control" style="background:#222; color:#00ff00;" rows="8" id="inData-"'+count+'>',
+                '<textarea class="form-control" style="background:#222; color:#00ff00;" rows="8" id="inData"'+count+'>',
                 '</textarea>',
                 '</div>',
                 '</div>'
@@ -159,29 +159,29 @@
         });
         
         socket.on('photo0', function (data) {
-            console.log("Incoming sensor data:",data.raw);
-            $("#inData").append(data.raw+"\r");
-            $("#inData").animate({scrollTop:$("#inData0")[0].scrollHeight - $("#inData").height()},200);
+            console.log("Incoming photo0 data:",data.raw);
+            $("#inData0").append(data.raw+"\r");
+            $("#inData0").animate({scrollTop:$("#inData0")[0].scrollHeight - $("#inData0").height()},200);
         });
         socket.on('photo1', function (data) {
-            console.log("Incoming sensor data:",data.raw);
-            $("#inData").append(data.raw+"\r");
-            $("#inData").animate({scrollTop:$("#inData0")[0].scrollHeight - $("#inData").height()},200);
+            console.log("Incoming photo1 data:",data.raw);
+            $("#inData1").append(data.raw+"\r");
+            $("#inData1").animate({scrollTop:$("#inData1")[0].scrollHeight - $("#inData1").height()},200);
         });
         socket.on('photo2', function (data) {
-            console.log("Incoming sensor data:",data.raw);
-            $("#inData").append(data.raw+"\r");
-            $("#inData").animate({scrollTop:$("#inData0")[0].scrollHeight - $("#inData").height()},200);
+            console.log("Incoming photo2 data:",data.raw);
+            $("#inData2").append(data.raw+"\r");
+            $("#inData2").animate({scrollTop:$("#inData2")[0].scrollHeight - $("#inData2").height()},200);
         });
         socket.on('photo3', function (data) {
-            console.log("Incoming sensor data:",data.raw);
-            $("#inData").append(data.raw+"\r");
-            $("#inData").animate({scrollTop:$("#inData0")[0].scrollHeight - $("#inData").height()},200);
+            console.log("Incoming photo3 data:",data.raw);
+            $("#inData3").append(data.raw+"\r");
+            $("#inData3").animate({scrollTop:$("#inData3")[0].scrollHeight - $("#inData3").height()},200);
         });
         socket.on('photo4', function (data) {
-            console.log("Incoming sensor data:",data.raw);
-            $("#inData").append(data.raw+"\r");
-            $("#inData").animate({scrollTop:$("#inData0")[0].scrollHeight - $("#inData").height()},200);
+            console.log("Incoming photo4 data:",data.raw);
+            $("#inData4").append(data.raw+"\r");
+            $("#inData4").animate({scrollTop:$("#inData4")[0].scrollHeight - $("#inData4").height()},200);
         });
 //        '<label class="switch btn btn-primary">',
 //                  '<input type="radio" name="pin-"' + count + 'id="off "'+ count + 'value="0"> OFF',

@@ -3,6 +3,7 @@ app = require('http').createServer(handler),
 io = require('socket.io').listen(app),
 fs = require('fs'),
 _ = require('lodash'),
+play = require('play').Play(),
 //PWMPins
 ledPins = {
     0:{ pin:3, led:null, state: 0, delay: 400, running: false},
@@ -12,12 +13,37 @@ ledPins = {
     4:{ pin:10, led:null, state: 0, delay: 400, running: false}
 };
 
+//
+//  // play with a callback
+//  play.sound('./wavs/sfx/intro.wav', function(){
+//
+//    // these are all "fire and forget", no callback
+//    play.sound('./wavs/sfx/alarm.wav');
+//    play.sound('./wavs/sfx/crinkle.wav');
+//    play.sound('./wavs/sfx/flush.wav');
+//    play.sound('./wavs/sfx/ding.wav');
+//
+//  });
+//
+//  //If you want to know when the player has defintely started playing
+//  play.on('play', function (valid) {
+//    console.log('I just started playing!');
+//  });
+//  play.sound('./wavs/sfx/ding.wav');
+//
+//  //If you want to know if this can't play for some reason
+//  play.on('error', function () {
+//    console.log('I can't play!');
+//  });
+
+
+
 photoPins = {
-    0:{ pin: 3, sensor: null },
-    1:{ pin: 5, sensor: null },
-    2:{ pin: 6, sensor: null },
-    3:{ pin: 9, sensor: null },
-    4:{ pin: 10,sensor: null },
+    0:{ pin: "0", sensor: null },
+    1:{ pin: "1", sensor: null },
+    2:{ pin: "2", sensor: null },
+    3:{ pin: "3", sensor: null },
+    4:{ pin: "4",sensor: null },
 };
 
 
@@ -30,11 +56,10 @@ _.forEach(ledPins, function(index){
     index.led.write(index.state);
 });
 
-//var analogPin0 = new mraa.Aio(0); //setup access analog input Analog pin #0 (A0)
-//var analogValue = analogPin0.read(); //read the value of the analog pin
+
 
 _.forEach(photoPins, function(index){
-    index.sensor = new mraa.Gpio(index.pin);
+    index.sensor = new mraa.Aio(index.pin);
 });
 
 led0Delay(ledPins[0]);
@@ -54,6 +79,7 @@ function led0Delay(ledData){
         }
     }
 }
+
 
 function led1Delay(ledData){
     if(ledData.running){
@@ -109,6 +135,44 @@ function setState(ledData){
         ledData.led.write(ledData.state);
 }
 
+
+function photo0Delay(sensor){
+	var value = sensor.read();
+	io.sockets.emit('photo0',{ data:value});
+	console.log("Photo"+sensor.pin+" data: ", value)
+	setTimeout(function() {photo0Delay(sensor);}, 100)
+}
+
+function photo1Delay(sensor){
+	var value = sensor.read();
+	io.sockets.emit('photo1',{ data:value});
+	console.log("Photo"+sensor.pin+" data: ", value)
+	setTimeout(function() {photo1Delay(sensor);}, 100)
+}
+
+function photo2Delay(sensor){
+	var value = sensor.read();
+	io.sockets.emit('photo2',{ data:value});
+	console.log("Photo"+sensor.pin+" data: ", value)
+	setTimeout(function() {photo2Delay(sensor);}, 100)
+}
+
+function photo3Delay(sensor){
+	var value = sensor.read();
+	io.sockets.emit('photo3',{ data:value});
+	console.log("Photo"+sensor.pin+" data: ", value)
+	setTimeout(function() {photo3Delay(sensor);}, 100)
+}
+
+function photo4Delay(sensor){
+	var value = sensor.read();
+	io.sockets.emit('photo4',{ data:value});
+	console.log("Photo"+sensor.pin+" data: ", value)
+	setTimeout(function() {photo4Delay(sensor);}, 100)
+}
+
+
+
 //=======================================================================================================
 // SOCKET.IO SHIT
 
@@ -131,24 +195,7 @@ function handler (req, res) {
 app.listen(3000);
 
 io.sockets.on('connection', function(socket){
-    
-    // handles sensor info
-    photoPins[0].on("data",function(){
-      socket.emit('phot00', { raw: this.raw });
-    });
-    photoPins[1].on("data",function(){
-      socket.emit('phot01', { raw: this.raw });
-    });
-    photoPins[2].on("data",function(){
-      socket.emit('phot02', { raw: this.raw });
-    });
-    photoPins[3].on("data",function(){
-      socket.emit('phot03', { raw: this.raw });
-    }); 
-    photoPins[4].on("data",function(){
-      socket.emit('phot04', { raw: this.raw });
-    });
-    
+		
     // if led delay message emitted
     socket.on('led', function (data) {
         console.log(data);
@@ -163,31 +210,6 @@ io.sockets.on('connection', function(socket){
 
     
 });
-
-//  // poll this sensor every second
-//  sensor = new five.Sensor({
-//    pin: "A0",
-//    freq: 1000
-//  });
-//
-//});
-//
-//
-//
-//
-//
-//// on a socket connection
-//io.sockets.on('connection', function (socket) {
-//  socket.emit('news', { hello: 'world' });
-//
-//
-//  // if led message received
-//  socket.on('led', function (data) {
-//    console.log(data);
-//     if(board.isReady){    led.strobe(data.delay); }
-//  });
-//
-//});
 
 //var analogPin0 = new mraa.Aio(0); //setup access analog input Analog pin #0 (A0)
 //var analogValue = analogPin0.read(); //read the value of the analog pin
