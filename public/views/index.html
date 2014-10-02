@@ -23,6 +23,7 @@
     <![endif]-->
   </head>
   <body>
+<!--
     <div class="container">
         <h1>johnny-five test</h1>
     <div class="row">
@@ -57,40 +58,133 @@
       </div>
     </div>
     </div>
+-->
+    <a class = "btn btn-primary" id="addDial" >Add a control!</a>
+    <div  class = "yui3-skin-sam" id="pins"></div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src ="../public/js/controls.js"></script>
+    <script>
+        
+        var socket = io.connect('http://192.168.1.4'),
+        dials = [],
+        maxDials = 5,
+        count = 0;
+        
+        $('#addDial').on('click', function(){
+            if (count === maxDials){
+                console.log("Max");
+                return;
+            }
+            console.log("running JQ");
+            createDisplay();
+            createSwitch();
+            createDial();
+        });
+        
+        function createSwitch(){
+            $('#pincont-'+count).append(
+                [ '<div class="col-md-6 switch>',
+                  '<label class="switch btn btn-primary">',
+                  '<input type="radio" name="pin-"'+ count +'id="on "'+ count + 'value="135"> ON',
+                  '</label>',        
+                  '<label class="switch btn btn-primary">',
+                  '<input type="radio" name="pin-"' + count + 'id="off "'+ count + 'value="180"> OFF',
+                  '</label>',
+                  '</div>'].join(''));
+        };
+        
+        function createDial(){
+             YUI().use('dial', function(Y) {
+                    var dial = new Y.Dial({
+                    min:200,
+                    max:2000,
+                    stepsPerRevolution:100,
+                    value: 200,
+                    strings:{ label: "Set Delay", resetStr: "Reset" }
+                });
+                dials.push(dial);
+                dial.render('#pincont-'+count);
+                $('.yui3-dial:last').addClass("col-md-6").attr("pin",count);
+                count+=1;
+            });
+        }
+        
+        function createDisplay(){
+            $('#pins').append([ 
+                '<center><div class = "col-md-4" id = "pincont-'+count+'"><center>',
+                '<div class="row display'+count+'">',
+                '<h4>LED'+count+'</h4>',
+                '<textarea class="form-control" style="background:#222; color:#00ff00;" rows="8" id="inData">',
+                '</textarea>',
+                '</div>',
+                '</div>'
+                ].join(''));
+            
+            if(count ==3 ){
+                $('#pincont-'+count).addClass("col-md-offset-1");
+            } else if (count == 4) {
+                $('#pincont-'+count).addClass("col-md-offset-2");
+            }
+        };
+        
+        
+        
+        $(document).on('mouseup', 'div.yui3-dial', function(){
+          // console.log("clicked");
+          var LEDpin = $(this).attr('pin');
+          var dial = dials[LEDpin];
+          var LEDval;
+          YUI().use('dial',function(Y){
+              LEDval = dial.get('value');
+          });
+          console.log("pin: ", LEDpin);
+          console.log("dial: ", dial);
+          console.log("val: ", LEDval);
+            
+          var tmp = parseInt(LEDval, 10);
+          socket.emit('led',{pin:LEDpin, interval:tmp});
+        });
+        
+//                    <label class="servobtn btn btn-primary">
+//              <input type="radio" name="servo" id="servo3" value="90"> 90
+//            </label>
+        
+        $('.switch').button();
 
-<!--
-      var socket = io.connect('http://localhost');
-
-      socket.on('news', function (data) {
-        console.log(data);
-      });
-
-      socket.on('sensor', function (data) {
-        console.log("Incoming sensor data:",data.raw);
-        $("#inData").append(data.raw+"\r");
-        $("#inData").animate({scrollTop:$("#inData")[0].scrollHeight - $("#inData").height()},200);
-
-      });
-
-      $('.servobtn').button();
-
-      $('.servobtn').on('change',function(){
-          console.log("Setting Servo Pos:",$('input[name=servo]:checked').val())
-          socket.emit('servo',{pos:$('input[name=servo]:checked').val()});
-      });
-
-      $('#ledSet').on('click',function(){
-        var tmp = parseInt($('#ledDelay').val(),10);
-        console.log("Setting LED Delay:",tmp)
-        socket.emit('led',{delay:tmp});
-      });
--->
+        $('.servobtn').on('change',function(){
+            console.log("Setting Servo Pos:",$('input[name=servo]:checked').val())
+            socket.emit('servo',{pos:$('input[name=servo]:checked').val()});
+        });
+        
+        //      var socket = io.connect('http://localhost');
+//
+//      socket.on('news', function (data) {
+//        console.log(data);
+//      });
+//
+//      socket.on('sensor', function (data) {
+//        console.log("Incoming sensor data:",data.raw);
+//        $("#inData").append(data.raw+"\r");
+//        $("#inData").animate({scrollTop:$("#inData")[0].scrollHeight - $("#inData").height()},200);
+//
+//      });
+//
+//      $('.servobtn').button();
+//
+//      $('.servobtn').on('change',function(){
+//          console.log("Setting Servo Pos:",$('input[name=servo]:checked').val())
+//          socket.emit('servo',{pos:$('input[name=servo]:checked').val()});
+//      });
+//
+//      $('#ledSet').on('click',function(){
+//        var tmp = parseInt($('#ledDelay').val(),10);
+//        console.log("Setting LED Delay:",tmp)
+//        socket.emit('led',{delay:tmp});
+//      });
+    </script>
 
     </body>
 </html>

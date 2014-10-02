@@ -26,10 +26,6 @@
 
 
 $(Document).ready(function(){
-  if (count === numLED){
-    console.log("Max");
-    return;
-  }
   console.log("running JQ");
   YUI().use('dial', function(Y) {
       var dial = new Y.Dial({

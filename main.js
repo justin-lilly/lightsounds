@@ -93,8 +93,6 @@ function led4Delay(ledData){
     }
 }
 
-
-
 function setState(ledData){
     if(ledData.state == 0){
         ledData.state = 1;
@@ -125,6 +123,15 @@ function handler (req, res) {
 // make web server listen on port 80
 app.listen(3000);
 
+io.sockets.on('connection', function(socket){
+    socket.emit('news', { hello: 'world' });
+
+    // if led message emitted
+    socket.on('led', function (data) {
+        console.log(data);
+        ledPins[data.pin].delay = data.interval;    
+    });
+});
 
 //  // poll this sensor every second
 //  sensor = new five.Sensor({
@@ -142,13 +149,6 @@ app.listen(3000);
 //io.sockets.on('connection', function (socket) {
 //  socket.emit('news', { hello: 'world' });
 //
-//  // if board is ready
-//  if(board.isReady){
-//    // read in sensor data, pass to browser
-//    sensor.on("data",function(){
-//      socket.emit('sensor', { raw: this.raw });
-//    });
-//  }
 //
 //  // if led message received
 //  socket.on('led', function (data) {
