@@ -23,6 +23,7 @@
     <![endif]-->
   </head>
   <body>
+		
     <a class = "btn btn-primary" id="addDial" >Add a control!</a>
     <div  class = "yui3-skin-sam" id="pins"></div>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -32,27 +33,27 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         
-        var socket = io.connect('http://192.168.1.4'),
+        var socket = io.connect('http://192.168.1.121'),
         dials = [],
         maxDials = 5,
         count = 0;
         
         $('#addDial').on('click', function(){
             if (count === maxDials){
-                console.log("Max");
+//                console.log("Max");
                 return;
             }
-            console.log("running JQ");
+//            console.log("running JQ");
             createDisplay();
             createButton();
             createDial();
         });
 				
 			$(document).on("click", ".onOff", function(){
-				console.log('INDABUTTON');
+//				console.log('INDABUTTON');
 					status = $(this).text();
 					LEDpin = $(this).attr('pin');
-				console.log(LEDpin);
+//				console.log(LEDpin);
 					if (status==='ON'){
 						$(this).text('OFF');
 						socket.emit('onOff',{pin:LEDpin, working:false});
@@ -73,9 +74,9 @@
              YUI().use('dial', function(Y) {
                     var dial = new Y.Dial({
                     min:200,
-                    max:2000,
-                    stepsPerRevolution:100,
-                    value: 1000,
+                    max:3000,
+                    stepsPerRevolution:500,
+                    value: 2000,
                     strings:{ label: "Set Delay", resetStr: "Reset" }
                 });
                 dials.push(dial);
@@ -87,7 +88,7 @@
         
         function createDisplay(){
             $('#pins').append([ 
-                '<center><div class = "col-md-4" id = "pincont-'+count+'"><center>',
+                '<center><div class = "col-md-4 panel" id = "pincont-'+count+'"><center>',
                 '<div class="row display'+count+'">',
                 '<h4>LED'+count+'</h4>',
                 '<textarea class="form-control" style="background:#222; color:#00ff00;" rows="8" id="inData'+count+'">',
@@ -113,38 +114,42 @@
           YUI().use('dial',function(Y){
               LEDval = dial.get('value');
           });
-          console.log("pin: ", LEDpin);
-          console.log("dial: ", dial);
-          console.log("val: ", LEDval);
+//          console.log("pin: ", LEDpin);
+//          console.log("dial: ", dial);
+//          console.log("val: ", LEDval);
             
           var tmp = parseInt(LEDval, 10);
           socket.emit('led',{pin:LEDpin, interval:tmp});
         });
-
-        $('.switch').on('change',function(){
-            $temp = $(this);
-            LEDpin = $temp.attr('pin');
-            LEDvalue = $temp.attr('value');
-            console.log("Setting Pin output:",$('input[name=switch]:checked').val())
-            socket.emit('switch',{pin:LEDpin, value:LEDvalue});
-        });
         
         socket.on('photo0', function (obj) {
-            console.log("Incoming photo0 data:",obj.data);
+//          console.log("Incoming photo0 data:",obj.data);
+//					if (obj.data < 700){
+//						ap0.play();
+//						ap0 = new Audio("/wav/syn_clap07.wav");				
+//					}
 					if($('#inData0').length != 0){
             $("#inData0").append(obj.data+"\r");
             $("#inData0").animate({scrollTop:$("#inData0")[0].scrollHeight - $("#inData0").height()},200);
 					}
         });
         socket.on('photo1', function (obj) {
-            console.log("Incoming photo1 data:",obj.data);
+//            console.log("Incoming photo1 data:",obj.data);
+//					if (obj.data < 700){
+//						ap1.play();
+//						ap1 = new Audio("/wav/syn_kick04.wav");					
+//					}
 					if($("#inData1").length != 0){
             $("#inData1").append(obj.data+"\r");
             $("#inData1").animate({scrollTop:$("#inData1")[0].scrollHeight - $("#inData1").height()},200);
 						}
         });
         socket.on('photo2', function (obj) {
-            console.log("Incoming photo2 data:",obj.data);
+//            console.log("Incoming photo2 data:",obj.data);
+//					if (obj.data < 700){
+//						ap2.play();
+//						ap2 = new Audio("/wav/syn_rim02.wav");						
+//					}
 					if($("#inData2").length != 0){
             $("#inData2").append(obj.data+"\r");
             $("#inData2").animate({scrollTop:$("#inData2")[0].scrollHeight - $("#inData2").height()},200);
@@ -152,7 +157,11 @@
         });
 			
         socket.on('photo3', function (obj) {
-            console.log("Incoming photo3 data:",obj.data);
+//            console.log("Incoming photo3 data:",obj.data);
+//					if (obj.data < 700){
+//						ap3.play();
+//						ap3 = new Audio("/wav/syn_rim05.wav");						
+//					}
 					if($("#inData3").length != 0){
             $("#inData3").append(obj.data+"\r");
             $("#inData3").animate({scrollTop:$("#inData3")[0].scrollHeight - $("#inData3").height()},200);
@@ -160,7 +169,12 @@
         });
 			
         socket.on('photo4', function (obj) {
-            console.log("Incoming photo4 data:",obj.data);
+//          console.log("Incoming photo4 data:",obj.data);
+//					if (obj.data < 700){
+////						console.log("HERERERERE");
+//						ap4.play();
+//						ap4 = new Audio("/wav/syn_zap1.wav");	
+//					}
 					if($("#inData4").length != 0){
             $("#inData4").append(obj.data+"\r");
             $("#inData4").animate({scrollTop:$("#inData4")[0].scrollHeight - $("#inData4").height()},200);
@@ -168,6 +182,5 @@
         });
 
     </script>
-
     </body>
 </html>
